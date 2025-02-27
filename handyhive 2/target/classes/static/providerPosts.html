@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Posts</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <ul>
+            <li><a href="homepage.html">Home</a></li>
+            <li><a href="provider_home.html">Upload a Post</a></li>
+            <li><a href="providerPosts.html">My Posts</a></li>
+        </ul>
+        <img src="logo.png" alt="HandyHive Logo" class="logo">
+    </nav>
+
+    <div class="container">
+        <h1>All Posts</h1>
+        <div id="postContainer"></div>
+
+        <a href="provider_home.html" class="link-button">Upload Another Post</a>
+    </div>
+
+    <script>
+        function loadPosts() {
+            const postContainer = document.getElementById("postContainer");
+            let posts = JSON.parse(localStorage.getItem("posts")) || [];
+
+            if (posts.length === 0) {
+                postContainer.innerHTML = "<p class='no-posts'>No posts available.</p>";
+                return;
+            }
+
+            postContainer.innerHTML = "";
+            posts.forEach((post, index) => {
+                const postElement = document.createElement("div");
+                postElement.classList.add("post");
+
+                postElement.innerHTML = `
+                    <img src="${post.imageUrl}" alt="Uploaded Image" class="post-image">
+                    <p class="post-caption">${post.caption}</p>
+                    <button class="delete-button" onclick="deletePost(${index})">Delete Post</button>
+                `;
+
+                postContainer.appendChild(postElement);
+            });
+        }
+
+        function deletePost(index) {
+            let posts = JSON.parse(localStorage.getItem("posts")) || [];
+            posts.splice(index, 1); // Remove the selected post
+            localStorage.setItem("posts", JSON.stringify(posts)); // Save updated posts
+            loadPosts(); // Refresh the display
+        }
+
+        window.onload = loadPosts;
+    </script>
+
+
+</body>
+</html>

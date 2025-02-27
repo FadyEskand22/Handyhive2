@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Provider Registration</title>
+    <link rel="stylesheet" href="loginStyles.css">
+</head>
+<body>
+
+    <div class="register-container">
+        <img src="logo.png" alt="HandyHive Logo" class="logo">
+        <h1>Provider Registration</h1>
+        <p>Fill in the details to sign up as a service provider</p>
+
+        <form id="providerForm">
+            <input type="text" placeholder="Full Name" required>
+            <input type="email" placeholder="Email Address" required>
+            <input type="text" placeholder="Business Name" required>
+            <input type="password" placeholder="Password" required>
+            <button type="submit">Register</button>
+        </form>
+
+        <button class="back-to-login" onclick="goBack()">Back to Login</button>
+    </div>
+
+    <script>
+        document.getElementById("providerForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            alert("Provider account created! Redirecting to login...");
+            window.location.href = "login.html";
+        });
+
+        function goBack() {
+            window.location.href = "login.html";
+        }
+    </script>
+
+</body>
+</html>

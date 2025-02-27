@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload a Post</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <ul>
+            <li><a href="homepage.html">Home</a></li>
+            <li><a href="provider_home.html">Upload a Post</a></li>
+            <li><a href="providerPosts.html">My Posts</a></li>
+        </ul>
+        <img src="logo.png" alt="HandyHive Logo" class="logo">
+    </nav>
+
+    <div class="container">
+        <h1>Upload a Post</h1>
+        <form id="uploadForm">
+            <input type="file" id="imageInput" accept="image/*">
+            <input type="text" id="captionInput" placeholder="Enter a caption...">
+            <button type="button" onclick="savePost()">Upload</button>
+        </form>
+
+        <a href="providerPosts.html" class="link-button">View All Posts</a>
+    </div>
+
+    <script>
+        function savePost() {
+            const imageInput = document.getElementById("imageInput");
+            const captionInput = document.getElementById("captionInput");
+
+            if (imageInput.files.length === 0) {
+                alert("Please select an image!");
+                return;
+            }
+
+            const file = imageInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(event) {
+                const imageUrl = event.target.result;
+                const caption = captionInput.value;
+
+                let posts = JSON.parse(localStorage.getItem("posts")) || [];
+                posts.push({ imageUrl, caption });
+                localStorage.setItem("posts", JSON.stringify(posts));
+
+                // ✅ Clear input fields after successful upload
+                imageInput.value = ""; 
+                captionInput.value = "";
+
+                alert("Post uploaded! Go to 'All Posts' to view.");
+            };
+
+            reader.readAsDataURL(file);
+        }
+    </script>
+
+</body>
+</html>

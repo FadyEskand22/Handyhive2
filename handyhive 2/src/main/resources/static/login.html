@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="loginStyles.css">
+</head>
+<body>
+
+    <div class="login-container">
+        <img src="logo.png" alt="HandyHive Logo" class="logo">
+        <h1>Sign In</h1>
+        <p>Access your HandyHive account</p>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Username" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="button" onclick="login()">Login</button>
+        </form>
+        <button class="register-button" onclick="openRegisterPopup()">Register</button>
+        <button class="forgot-password" onclick="forgotPassword()">Forgot Password?</button>
+       
+    </div>
+
+  
+    <div class="registration-popup" id="registrationPopup">
+        <h2>Sign Up As</h2>
+        <button class="register-provider" onclick="location.href='provider_register.html'">Provider</button>
+        <button class="register-shopper" onclick="location.href='shopper_register.html'">Shopper</button>
+        <button class="close-popup" onclick="closeRegisterPopup()">Cancel</button>
+    </div>
+
+    <script>
+        function login() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            if (username.trim() === "" || password.trim() === "") {
+                alert("Please enter both username and password.");
+                return;
+            }
+
+            window.location.href = "homepage.html";
+        }
+
+        function forgotPassword() {
+            alert("Forgot password functionality coming soon!");
+        }
+
+        function openRegisterPopup() {
+            document.getElementById("registrationPopup").style.display = "block";
+        }
+
+        function closeRegisterPopup() {
+            document.getElementById("registrationPopup").style.display = "none";
+        }
+
+        function register(userType) {
+            alert("Registered as " + userType + "! Redirecting to login...");
+            closeRegisterPopup();
+        }
+    </script>
+
+</body>
+</html>

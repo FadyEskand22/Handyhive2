@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Posts</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <ul>
+            <li><a href="homepage.html">Home</a></li>
+            <li><a href="provider_home.html">Upload a Post</a></li>
+            <li><a href="providerPosts.html">My Posts</a></li>
+        </ul>
+        <img src="logo.png" alt="HandyHive Logo" class="logo">
+    </nav>
+
+    <div class="container">
+        <h1>New Promotions!</h1>
+        <div id="postContainer"></div>
+    </div>
+
+    <script>
+        function loadPosts() {
+            const postContainer = document.getElementById("postContainer");
+            let posts = JSON.parse(localStorage.getItem("posts")) || [];
+
+            if (posts.length === 0) {
+                postContainer.innerHTML = "<p class='no-posts'>No posts available.</p>";
+                return;
+            }
+
+            postContainer.innerHTML = "";
+            posts.forEach((post, index) => {
+                const postElement = document.createElement("div");
+                postElement.classList.add("post");
+
+                postElement.innerHTML = `
+                    <img src="${post.imageUrl}" alt="Uploaded Image" class="post-image">
+                    <p class="post-caption">${post.caption}</p>`;
+
+                postContainer.appendChild(postElement);
+            });
+        }
+
+        window.onload = loadPosts;
+    </script>
+
+</body>
+</html>
+
