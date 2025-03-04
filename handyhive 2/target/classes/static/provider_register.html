@@ -3,38 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Provider Registration</title>
+    <title>HandyHive | Provider Registration</title>
     <link rel="stylesheet" href="loginStyles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div class="page-container">
+        <div class="login-card">
+            <div class="logo-container">
+                <img src="logo.png" alt="HandyHive Logo" class="logo">
+            </div>
+            
+            <div class="form-header">
+                <h2>Create Provider Account</h2>
+                <p>Start offering your services on HandyHive</p>
+            </div>
 
-    <div class="register-container">
-        <img src="logo.png" alt="HandyHive Logo" class="logo">
-        <h1>Provider Registration</h1>
-        <p>Fill in the details to sign up as a service provider</p>
+            <form id="providerForm" class="login-form">
+                <div class="input-group">
+                    <input type="text" id="username" placeholder=" " required>
+                    <label for="username">Username</label>
+                </div>
 
-        <form id="providerForm">
-            <input type="text" placeholder="Full Name" required>
-            <input type="email" placeholder="Email Address" required>
-            <input type="text" placeholder="Business Name" required>
-            <input type="password" placeholder="Password" required>
-            <button type="submit">Register</button>
-        </form>
+                <div class="input-group">
+                    <input type="text" id="fullName" placeholder=" " required>
+                    <label for="fullName">Full Name</label>
+                </div>
 
-        <button class="back-to-login" onclick="goBack()">Back to Login</button>
+                <div class="input-group">
+                    <input type="email" id="email" placeholder=" " required>
+                    <label for="email">Email Address</label>
+                </div>
+
+                <div class="input-group">
+                    <input type="text" id="businessName" placeholder=" " required>
+                    <label for="businessName">Business Name</label>
+                </div>
+
+                <div class="input-group">
+                    <input type="password" id="password" placeholder=" " required>
+                    <label for="password">Password</label>
+                </div>
+
+                <div class="input-group">
+                    <input type="password" id="confirmPassword" placeholder=" " required>
+                    <label for="confirmPassword">Confirm Password</label>
+                </div>
+
+                <button type="submit" class="login-button">Create Account</button>
+                
+                <div class="divider">
+                    <span>or</span>
+                </div>
+
+                <button type="button" class="register-button" onclick="goBack()">
+                    Back to Login
+                </button>
+            </form>
+        </div>
     </div>
 
     <script>
         document.getElementById("providerForm").addEventListener("submit", function(event) {
             event.preventDefault();
-            alert("Provider account created! Redirecting to login...");
-            window.location.href = "login.html";
+            
+            const username = document.getElementById("username").value;
+            const fullName = document.getElementById("fullName").value;
+            const email = document.getElementById("email").value;
+            const businessName = document.getElementById("businessName").value;
+            const password = document.getElementById("password").value;
+            const confirmPassword = document.getElementById("confirmPassword").value;
+
+            // Validation
+            if (password !== confirmPassword) {
+                alert("Passwords do not match!");
+                return;
+            }
+
+            // Get existing users
+            const users = JSON.parse(localStorage.getItem("users")) || [];
+
+            // Check if username already exists
+            if (users.some(user => user.username === username)) {
+                alert("Username already exists!");
+                return;
+            }
+
+            // Create new user object
+            const newUser = {
+                username,
+                fullName,
+                email,
+                businessName,
+                password,
+                type: "provider",
+                profilePicture: "default-profile.png",
+                dateJoined: new Date().toISOString(),
+                businessInfo: {
+                    description: "",
+                    services: [],
+                    location: "",
+                    phone: "",
+                    rating: 0,
+                    reviewCount: 0
+                },
+                businessHours: {
+                    monday: { start: "", end: "" },
+                    tuesday: { start: "", end: "" },
+                    wednesday: { start: "", end: "" },
+                    thursday: { start: "", end: "" },
+                    friday: { start: "", end: "" },
+                    saturday: { start: "", end: "" },
+                    sunday: { start: "", end: "" }
+                }
+            };
+
+            // Add new user to users array
+            users.push(newUser);
+            localStorage.setItem("users", JSON.stringify(users));
+
+            // Set as current user
+            localStorage.setItem("currentUser", JSON.stringify(newUser));
+
+            alert("Provider account created successfully!");
+            window.location.href = "provider_profile.html";
         });
 
         function goBack() {
             window.location.href = "login.html";
         }
     </script>
-
 </body>
 </html>

@@ -12,7 +12,7 @@ import java.util.Optional;
 @Service
 public class PostService {
     private final PostRepository postRepository;
-    private final String uploadDir = "src/main/resources/static/uploads/";  // ✅ Ensure correct upload path
+    private final String uploadDir = "src/main/resources/static/uploads/";  
 
     public PostService(PostRepository postRepository) {
         this.postRepository = postRepository;
@@ -41,7 +41,7 @@ public class PostService {
         // ✅ Save post details in database
         Post post = new Post();
         post.setCaption(caption);
-        post.setImagePath("/uploads/" + fileName);  // ✅ Correct relative path
+        post.setImagePath("/uploads/" + fileName); 
         return postRepository.save(post);
     }
 }

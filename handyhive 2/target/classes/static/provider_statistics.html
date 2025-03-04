@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HandyHive | Provider Statistics</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .stats-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .stats-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .stats-header h1 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            color: #FFB800;
+            margin-bottom: 1rem;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .chart-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .chart-section h2 {
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+
+        .engagement-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .engagement-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .engagement-item:last-child {
+            border-bottom: none;
+        }
+
+        .engagement-icon {
+            font-size: 1.5rem;
+            margin-right: 1rem;
+            color: #FFB800;
+        }
+
+        .engagement-details {
+            flex: 1;
+        }
+
+        .engagement-title {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 0.25rem;
+        }
+
+        .engagement-meta {
+            font-size: 0.875rem;
+            color: #666;
+        }
+
+        .download-buttons {
+            margin-top: 1.5rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .download-btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .pdf-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .pdf-btn:hover {
+            background: #c82333;
+        }
+
+        .txt-btn {
+            background: #6c757d;
+            color: white;
+        }
+
+        .txt-btn:hover {
+            background: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="homepage.html" class="logo-link">
+                <img src="logo.png" alt="HandyHive Logo" class="logo">
+            </a>
+        </div>
+        <div class="nav-right">
+            <a href="homepage.html">Home</a>
+            <a href="provider_home.html">Create Post</a>
+            <a href="provider_profile.html">Profile</a>
+            <a href="provider_statistics.html" class="active">Statistics</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </div>
+    </nav>
+
+    <div class="stats-container">
+        <div class="stats-header">
+            <h1><i class="fas fa-chart-line"></i> Business Statistics</h1>
+            <p>Track your business performance and customer engagement</p>
+            <div class="download-buttons">
+                <button onclick="downloadPDF()" class="download-btn pdf-btn">
+                    <i class="fas fa-file-pdf"></i> Download PDF Report
+                </button>
+                <button onclick="downloadTXT()" class="download-btn txt-btn">
+                    <i class="fas fa-file-alt"></i> Download Text Report
+                </button>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-bookmark"></i>
+                </div>
+                <div class="stat-value" id="savedCount">0</div>
+                <div class="stat-label">Saved by Customers</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-comment"></i>
+                </div>
+                <div class="stat-value" id="commentCount">0</div>
+                <div class="stat-label">Total Comments</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <div class="stat-value" id="likeCount">0</div>
+                <div class="stat-label">Total Likes</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-image"></i>
+                </div>
+                <div class="stat-value" id="postCount">0</div>
+                <div class="stat-label">Total Posts</div>
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <h2><i class="fas fa-comments"></i> Recent Engagement</h2>
+            <div id="recentEngagement" class="engagement-list">
+                <!-- Recent engagement will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        // Check if user is logged in and is a provider
+        window.addEventListener('load', () => {
+            const currentUser = localStorage.getItem('currentUser');
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const user = JSON.parse(currentUser);
+            if (user.type !== 'provider') {
+                window.location.href = 'homepage.html';
+                return;
+            }
+
+            loadStatistics();
+        });
+
+        function loadStatistics() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const posts = JSON.parse(localStorage.getItem('posts')) || [];
+
+            // Count how many customers have saved this provider
+            const savedCount = users.filter(user => 
+                user.type === 'customer' && 
+                user.savedProviders && 
+                user.savedProviders.includes(currentUser.username)
+            ).length;
+
+            // Get provider's posts
+            const providerPosts = posts.filter(post => post.providerUsername === currentUser.username);
+
+            // Calculate total comments and likes
+            let totalComments = 0;
+            let totalLikes = 0;
+            providerPosts.forEach(post => {
+                totalComments += (post.comments || []).length;
+                totalLikes += (post.likes || []).length;
+            });
+
+            // Update statistics display
+            document.getElementById('savedCount').textContent = savedCount;
+            document.getElementById('commentCount').textContent = totalComments;
+            document.getElementById('likeCount').textContent = totalLikes;
+            document.getElementById('postCount').textContent = providerPosts.length;
+
+            // Load recent engagement
+            loadRecentEngagement(providerPosts);
+        }
+
+        function loadRecentEngagement(providerPosts) {
+            const engagementList = document.getElementById('recentEngagement');
+            const recentEngagement = [];
+
+            // Get recent comments
+            providerPosts.forEach(post => {
+                (post.comments || []).forEach(comment => {
+                    recentEngagement.push({
+                        type: 'comment',
+                        username: comment.username,
+                        date: new Date(comment.date),
+                        text: comment.text,
+                        postImage: post.imageUrl
+                    });
+                });
+            });
+
+            // Sort engagement by date
+            recentEngagement.sort((a, b) => b.date - a.date);
+
+            // Display recent engagement
+            engagementList.innerHTML = recentEngagement.length > 0 ? 
+                recentEngagement.slice(0, 5).map(engagement => `
+                    <div class="engagement-item">
+                        <div class="engagement-icon">
+                            <i class="fas fa-comment"></i>
+                        </div>
+                        <div class="engagement-details">
+                            <div class="engagement-title">${engagement.username}</div>
+                            <div class="engagement-meta">
+                                ${engagement.text}
+                                <br>
+                                <small>${formatDate(engagement.date)}</small>
+                            </div>
+                        </div>
+                    </div>
+                `).join('') :
+                '<p style="text-align: center; color: #666;">No recent engagement</p>';
+        }
+
+        function formatDate(date) {
+            return new Date(date).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        }
+
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const date = new Date().toLocaleDateString();
+
+            // Set font size and style
+            doc.setFontSize(22);
+            doc.text('HandyHive Business Statistics Report', 20, 20);
+            
+            doc.setFontSize(14);
+            doc.text(`Generated on: ${date}`, 20, 30);
+            doc.text(`Business Name: ${currentUser.businessName}`, 20, 40);
+            doc.text(`Provider Name: ${currentUser.fullName}`, 20, 50);
+
+            // Add statistics
+            doc.setFontSize(16);
+            doc.text('Key Metrics:', 20, 70);
+            
+            doc.setFontSize(12);
+            doc.text(`• Saved by Customers: ${document.getElementById('savedCount').textContent}`, 30, 80);
+            doc.text(`• Total Comments: ${document.getElementById('commentCount').textContent}`, 30, 90);
+            doc.text(`• Total Likes: ${document.getElementById('likeCount').textContent}`, 30, 100);
+            doc.text(`• Total Posts: ${document.getElementById('postCount').textContent}`, 30, 110);
+
+            // Add recent engagement
+            doc.setFontSize(16);
+            doc.text('Recent Engagement:', 20, 130);
+
+            const engagementItems = document.querySelectorAll('.engagement-item');
+            let yPos = 140;
+            
+            engagementItems.forEach((item, index) => {
+                if (yPos > 250) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+                
+                const username = item.querySelector('.engagement-title').textContent;
+                const comment = item.querySelector('.engagement-meta').textContent;
+                
+                doc.setFontSize(12);
+                doc.text(`${index + 1}. ${username}`, 30, yPos);
+                doc.setFontSize(10);
+                
+                // Split long comments into multiple lines
+                const commentLines = doc.splitTextToSize(comment, 150);
+                doc.text(commentLines, 40, yPos + 5);
+                
+                yPos += 20 + (commentLines.length * 5);
+            });
+
+            // Save the PDF
+            doc.save(`HandyHive_Statistics_${date.replace(/\//g, '-')}.pdf`);
+        }
+
+        function downloadTXT() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const date = new Date().toLocaleDateString();
+            
+            let content = 'HandyHive Business Statistics Report\n';
+            content += '=====================================\n\n';
+            content += `Generated on: ${date}\n`;
+            content += `Business Name: ${currentUser.businessName}\n`;
+            content += `Provider Name: ${currentUser.fullName}\n\n`;
+            
+            content += 'Key Metrics:\n';
+            content += '-----------\n';
+            content += `Saved by Customers: ${document.getElementById('savedCount').textContent}\n`;
+            content += `Total Comments: ${document.getElementById('commentCount').textContent}\n`;
+            content += `Total Likes: ${document.getElementById('likeCount').textContent}\n`;
+            content += `Total Posts: ${document.getElementById('postCount').textContent}\n\n`;
+            
+            content += 'Recent Engagement:\n';
+            content += '-----------------\n';
+            
+            const engagementItems = document.querySelectorAll('.engagement-item');
+            engagementItems.forEach((item, index) => {
+                const username = item.querySelector('.engagement-title').textContent;
+                const comment = item.querySelector('.engagement-meta').textContent;
+                content += `${index + 1}. ${username}\n   ${comment}\n\n`;
+            });
+
+            // Create and download the text file
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `HandyHive_Statistics_${date.replace(/\//g, '-')}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+    </script>
+</body>
+</html> 
