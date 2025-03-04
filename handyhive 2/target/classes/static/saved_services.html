@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HandyHive | Saved Services</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .saved-services-header {
+            padding: 2rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin: 2rem 0;
+        }
+
+        .providers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 1rem;
+        }
+
+        .provider-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .provider-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .provider-header {
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .provider-header img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1rem;
+        }
+
+        .provider-info {
+            padding: 1.5rem;
+        }
+
+        .provider-info p {
+            margin: 0.5rem 0;
+            color: #666;
+        }
+
+        .provider-actions {
+            padding: 1rem;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .action-btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-weight: 500;
+        }
+
+        .primary-btn {
+            background: #FFB800;
+            color: white;
+        }
+
+        .primary-btn:hover {
+            background: #E5A600;
+        }
+
+        .secondary-btn {
+            background: #6c757d;
+            color: white;
+        }
+
+        .secondary-btn:hover {
+            background: #5a6268;
+        }
+
+        .service-type-badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            background: #FFF8E7;
+            color: #FFB800;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .no-saved-services {
+            text-align: center;
+            padding: 3rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin: 2rem 0;
+        }
+
+        .no-saved-services i {
+            font-size: 3rem;
+            color: #ccc;
+            margin-bottom: 1rem;
+        }
+
+        .no-saved-services h2 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .no-saved-services p {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+
+        .find-services-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.5rem;
+            background: #FFB800;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .find-services-btn:hover {
+            background: #E5A600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="homepage.html" class="logo-link">
+                <img src="logo.png" alt="HandyHive Logo" class="logo">
+            </a>
+        </div>
+        <div class="nav-right">
+            <a href="homepage.html">Home</a>
+            <a href="find_services.html">Find Services</a>
+            <a href="saved_services.html" class="active">Saved Services</a>
+            <a href="customer_profile.html">Profile</a>
+            <a href="#" onclick="logout()">Logout</a>
+            <a href="#" onclick="confirmDeleteAccount()" class="delete-account">Delete Account</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="saved-services-header">
+            <h1><i class="fas fa-bookmark"></i> Saved Services</h1>
+            <p>View and manage your saved service providers</p>
+        </div>
+
+        <div id="savedProvidersGrid" class="providers-grid">
+            <!-- Saved providers will be loaded here dynamically -->
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let savedProviders = [];
+
+        window.addEventListener('load', () => {
+            // Check if user is logged in
+            const userJson = localStorage.getItem('currentUser');
+            if (!userJson) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            currentUser = JSON.parse(userJson);
+            if (currentUser.type !== 'customer') {
+                window.location.href = 'homepage.html';
+                return;
+            }
+
+            loadSavedProviders();
+        });
+
+        function loadSavedProviders() {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const savedProviderUsernames = currentUser.savedProviders || [];
+            savedProviders = users.filter(user => savedProviderUsernames.includes(user.username));
+            displaySavedProviders();
+        }
+
+        function displaySavedProviders() {
+            const providersGrid = document.getElementById('savedProvidersGrid');
+            providersGrid.innerHTML = '';
+
+            if (savedProviders.length === 0) {
+                providersGrid.innerHTML = `
+                    <div class="no-saved-services">
+                        <i class="fas fa-bookmark"></i>
+                        <h2>No saved services yet</h2>
+                        <p>Start exploring and save service providers you're interested in</p>
+                        <a href="find_services.html" class="find-services-btn">
+                            <i class="fas fa-search"></i> Find Services
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+
+            savedProviders.forEach(provider => {
+                const card = document.createElement('div');
+                card.className = 'provider-card';
+                card.innerHTML = `
+                    <div class="provider-header">
+                        <img src="${provider.profilePicture}" alt="${provider.fullName}" onerror="this.style.display='none'">
+                        <h2>${provider.businessName || provider.fullName}</h2>
+                        <div class="service-type-badge">
+                            <i class="fas fa-tools"></i> ${provider.serviceType || 'Service Provider'}
+                        </div>
+                    </div>
+                    <div class="provider-info">
+                        <p><i class="fas fa-envelope"></i> ${provider.email || 'Email not provided'}</p>
+                        <p><i class="fas fa-phone"></i> ${provider.phone || 'Phone not provided'}</p>
+                        <p><i class="fas fa-map-marker-alt"></i> ${provider.location || 'Location not specified'}</p>
+                        <p><i class="fas fa-business-time"></i> ${provider.businessHours?.monday?.start ? 'Business hours available' : 'Hours not specified'}</p>
+                    </div>
+                    <div class="provider-actions">
+                        <button onclick="viewProviderProfile('${provider.username}')" class="action-btn primary-btn">
+                            <i class="fas fa-user"></i> View Profile
+                        </button>
+                        <button onclick="unsaveProvider('${provider.username}')" class="action-btn secondary-btn">
+                            <i class="fas fa-bookmark"></i> Remove
+                        </button>
+                    </div>
+                `;
+                providersGrid.appendChild(card);
+            });
+        }
+
+        function viewProviderProfile(username) {
+            localStorage.setItem('viewingProvider', username);
+            window.location.href = 'provider_public_profile.html';
+        }
+
+        function unsaveProvider(username) {
+            // Remove provider from saved list
+            currentUser.savedProviders = currentUser.savedProviders.filter(p => p !== username);
+            
+            // Update currentUser in localStorage
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+            // Update users array in localStorage
+            const users = JSON.parse(localStorage.getItem('users'));
+            const userIndex = users.findIndex(u => u.username === currentUser.username);
+            if (userIndex !== -1) {
+                users[userIndex] = currentUser;
+                localStorage.setItem('users', JSON.stringify(users));
+            }
+
+            // Reload saved providers
+            loadSavedProviders();
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html> 

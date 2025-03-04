@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - HandyHive</title>
+    <link rel="stylesheet" href="loginStyles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        .admin-badge {
+            background: #ffb300;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: inline-block;
+        }
+
+        .back-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #8e8e8e;
+            text-decoration: none;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .back-link:hover {
+            color: #262626;
+        }
+
+        .back-link::before {
+            content: '←';
+            font-size: 18px;
+        }
+
+        .error-message {
+            color: #f44336;
+            font-size: 14px;
+            text-align: center;
+            margin-top: 8px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <a href="login.html" class="back-link">Back to Login</a>
+    
+    <div class="page-container">
+        <div class="login-card">
+            <div class="logo-container">
+                <img src="logo.png" alt="HandyHive Logo" class="logo">
+                <div class="admin-badge">Admin Portal</div>
+            </div>
+            
+            <form id="adminLoginForm" class="login-form">
+                <div class="input-group">
+                    <input type="text" id="username" placeholder=" " required>
+                    <label for="username">Admin Username</label>
+                </div>
+                
+                <div class="input-group">
+                    <input type="password" id="password" placeholder=" " required>
+                    <label for="password">Admin Password</label>
+                </div>
+
+                <button type="submit" class="login-button">Login as Admin</button>
+                <p id="errorMessage" class="error-message">Invalid admin credentials</p>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Initialize admin credentials if they don't exist
+        if (!localStorage.getItem('adminCredentials')) {
+            const adminCredentials = {
+                username: 'admin',
+                password: 'admin123',
+                type: 'admin'
+            };
+            localStorage.setItem('adminCredentials', JSON.stringify(adminCredentials));
+        }
+
+        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const adminCredentials = JSON.parse(localStorage.getItem('adminCredentials'));
+            
+            if (username === adminCredentials.username && password === adminCredentials.password) {
+                // Store admin session
+                localStorage.setItem('currentUser', JSON.stringify({
+                    username: username,
+                    type: 'admin'
+                }));
+                
+                // Redirect to admin view
+                window.location.href = 'admin_view.html';
+            } else {
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html> 

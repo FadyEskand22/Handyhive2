@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HandyHive | Provider Profile</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="profile.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="homepage.html" class="logo-link">
+                <img src="logo.png" alt="HandyHive Logo" class="logo">
+            </a>
+        </div>
+        <div class="nav-right">
+            <a href="homepage.html">Home</a>
+            <a href="provider_home.html">Create Post</a>
+            <a href="provider_profile.html" class="active">Profile</a>
+            <a href="provider_statistics.html">Statistics</a>
+            <a href="#" onclick="logout()">Logout</a>
+            <a href="#" onclick="confirmDeleteAccount()" class="delete-account">Delete Account</a>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="logo.png" alt="HandyHive Logo" class="logo">
+            <button class="close-sidebar" onclick="toggleSidebar()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <ul>
+            <li><a href="homepage.html"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="provider_home.html"><i class="fas fa-plus-square"></i> Create Post</a></li>
+            <li><a href="provider_profile.html" class="active"><i class="fas fa-user"></i> Profile</a></li>
+            <li><a href="provider_statistics.html"><i class="fas fa-chart-bar"></i> Statistics</a></li>
+            <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            <li><a href="#" onclick="confirmDeleteAccount()" class="delete-account"><i class="fas fa-trash-alt"></i> Delete Account</a></li>
+        </ul>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- Delete Account Modal -->
+    <div id="deleteAccountModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h2><i class="fas fa-exclamation-triangle"></i> Delete Account</h2>
+            <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+            <div class="modal-buttons">
+                <button onclick="deleteAccount()" class="delete-button"><i class="fas fa-trash-alt"></i> Yes, Delete Account</button>
+                <button onclick="closeDeleteModal()" class="cancel-button"><i class="fas fa-times"></i> Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="profile-header">
+            <div class="profile-picture-container">
+                <img id="profilePicture" src="default-profile.png" alt="Profile Picture" class="profile-picture">
+                <label for="profilePictureInput" class="change-picture-button">
+                    <i class="fas fa-camera"></i> Change Picture
+                </label>
+                <input type="file" id="profilePictureInput" accept="image/*" style="display: none;" onchange="handleProfilePictureChange(event)">
+            </div>
+            
+            <div class="profile-info">
+                <h1 id="businessNameDisplay">Business Name</h1>
+                <p id="username">@username</p>
+                <p id="emailDisplay"><i class="fas fa-envelope"></i> email@example.com</p>
+                <p id="phoneDisplay"><i class="fas fa-phone"></i> Phone Number</p>
+                <p id="joinDate"><i class="fas fa-calendar-alt"></i> Joined: <span></span></p>
+            </div>
+        </div>
+
+        <div class="profile-content">
+            <div class="profile-section">
+                <h2>Business Information</h2>
+                <form id="profileForm" class="profile-form">
+                    <div class="form-group">
+                        <label for="businessNameInput">Business Name</label>
+                        <input type="text" id="businessNameInput" placeholder="Enter your business name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="fullName" placeholder="Enter your full name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="emailInput">Email</label>
+                        <input type="email" id="emailInput" placeholder="Enter your email">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phoneInput">Phone Number</label>
+                        <input type="tel" id="phoneInput" placeholder="Enter your phone number">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Business Description</label>
+                        <textarea id="description" rows="4" placeholder="Describe your business and services..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="services">Services Offered</label>
+                        <textarea id="services" rows="3" placeholder="List your services (one per line)..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location">Service Area</label>
+                        <input type="text" id="location" placeholder="Enter your service area">
+                    </div>
+
+                    <button type="submit" class="save-button">Save Changes</button>
+                </form>
+            </div>
+
+            <div class="profile-section">
+                <h2>Business Hours</h2>
+                <div class="business-hours">
+                    <div class="day-row">
+                        <span>Monday</span>
+                        <input type="text" id="monStart" class="time-input" placeholder="9:00 AM" maxlength="8">
+                        <span>to</span>
+                        <input type="text" id="monEnd" class="time-input" placeholder="5:00 PM" maxlength="8">
+                        <button class="copy-hours" onclick="copyHoursToAll('monStart', 'monEnd')" title="Copy to all days">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="day-row">
+                        <span>Tuesday</span>
+                        <input type="text" id="tueStart" class="time-input" placeholder="9:00 AM" maxlength="8">
+                        <span>to</span>
+                        <input type="text" id="tueEnd" class="time-input" placeholder="5:00 PM" maxlength="8">
+                    </div>
+                    <div class="day-row">
+                        <span>Wednesday</span>
+                        <input type="text" id="wedStart" class="time-input" placeholder="9:00 AM" maxlength="8">
+                        <span>to</span>
+                        <input type="text" id="wedEnd" class="time-input" placeholder="5:00 PM" maxlength="8">
+                    </div>
+                    <div class="day-row">
+                        <span>Thursday</span>
+                        <input type="text" id="thuStart" class="time-input" placeholder="9:00 AM" maxlength="8">
+                        <span>to</span>
+                        <input type="text" id="thuEnd" class="time-input" placeholder="5:00 PM" maxlength="8">
+                    </div>
+                    <div class="day-row">
+                        <span>Friday</span>
+                        <input type="text" id="friStart" class="time-input" placeholder="9:00 AM" maxlength="8">
+                        <span>to</span>
+                        <input type="text" id="friEnd" class="time-input" placeholder="5:00 PM" maxlength="8">
+                    </div>
+                    <div class="day-row">
+                        <span>Saturday</span>
+                        <input type="text" id="satStart" class="time-input" placeholder="9:00 AM" maxlength="8">
+                        <span>to</span>
+                        <input type="text" id="satEnd" class="time-input" placeholder="5:00 PM" maxlength="8">
+                    </div>
+                    <div class="day-row">
+                        <span>Sunday</span>
+                        <input type="text" id="sunStart" class="time-input" placeholder="9:00 AM" maxlength="8">
+                        <span>to</span>
+                        <input type="text" id="sunEnd" class="time-input" placeholder="5:00 PM" maxlength="8">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-section posts-grid-section">
+            <h2>Posts</h2>
+            <div class="posts-grid" id="postsGrid"></div>
+        </div>
+    </div>
+
+    <style>
+    .business-hours {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .day-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 6px;
+    }
+
+    .day-row span {
+        width: 100px;
+        font-weight: 500;
+    }
+
+    .time-input {
+        width: 100px;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+        margin: 0 10px;
+    }
+
+    .time-input:focus {
+        border-color: #007bff;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+    }
+
+    .copy-hours {
+        background: none;
+        border: none;
+        color: #6c757d;
+        cursor: pointer;
+        padding: 5px;
+        margin-left: 10px;
+        transition: color 0.2s;
+    }
+
+    .copy-hours:hover {
+        color: #007bff;
+    }
+    </style>
+
+    <script>
+        // Check if user is logged in
+        window.addEventListener('load', () => {
+            const currentUser = localStorage.getItem('currentUser');
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+            loadProfileData();
+            loadPostsGrid();
+        });
+
+        // Update profile picture preview
+        function handleProfilePictureChange(event) {
+            const input = event.target;
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageUrl = e.target.result;
+                    document.getElementById('profilePicture').src = imageUrl;
+                    
+                    // Update user's profile picture in storage
+                    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                    currentUser.profilePicture = imageUrl;
+                    updateUser(currentUser);
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Update user data in both currentUser and users array
+        function updateUser(updatedUser) {
+            localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+            
+            const users = JSON.parse(localStorage.getItem('users'));
+            const userIndex = users.findIndex(u => u.username === updatedUser.username);
+            if (userIndex !== -1) {
+                users[userIndex] = updatedUser;
+                localStorage.setItem('users', JSON.stringify(users));
+            }
+        }
+
+        // Update display name when business name changes
+        document.getElementById('businessNameInput').addEventListener('input', function(e) {
+            const businessName = e.target.value || 'Business Name';
+            document.getElementById('businessNameDisplay').textContent = businessName;
+            
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            currentUser.businessName = businessName;
+            updateUser(currentUser);
+        });
+
+        // Update display name when full name changes
+        document.getElementById('fullName').addEventListener('input', function(e) {
+            const fullName = e.target.value || 'Full Name';
+            document.getElementById('username').textContent = fullName;
+            
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            currentUser.fullName = fullName;
+            updateUser(currentUser);
+        });
+
+        // Handle form submission
+        document.getElementById('profileForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            
+            // Update business info
+            const businessName = document.getElementById('businessNameInput').value;
+            const email = document.getElementById('emailInput').value;
+            const phone = document.getElementById('phoneInput').value;
+            
+            currentUser.businessName = businessName;
+            currentUser.email = email;
+            
+            currentUser.businessInfo = {
+                description: document.getElementById('description').value,
+                services: document.getElementById('services').value.split('\n').filter(s => s.trim()),
+                location: document.getElementById('location').value,
+                phone: phone,
+                email: email,
+                rating: currentUser.businessInfo?.rating || 0,
+                reviewCount: currentUser.businessInfo?.reviewCount || 0
+            };
+
+            // Update displays
+            document.getElementById('businessNameDisplay').textContent = businessName || 'Business Name';
+            document.getElementById('emailDisplay').innerHTML = `<i class="fas fa-envelope"></i> ${email || 'email@example.com'}`;
+            document.getElementById('phoneDisplay').innerHTML = `<i class="fas fa-phone"></i> ${phone || 'Phone Number'}`;
+
+            // Update business hours with proper formatting
+            function convertTo24Hour(time12h) {
+                if (!time12h) return '';
+                const [time, modifier] = time12h.split(' ');
+                let [hours, minutes] = time.split(':');
+                hours = parseInt(hours);
+                if (hours === 12) hours = 0;
+                if (modifier === 'PM') hours += 12;
+                return `${hours.toString().padStart(2, '0')}:${minutes}`;
+            }
+
+            currentUser.businessHours = {
+                monday: {
+                    start: convertTo24Hour(document.getElementById('monStart').value),
+                    end: convertTo24Hour(document.getElementById('monEnd').value)
+                },
+                tuesday: {
+                    start: convertTo24Hour(document.getElementById('tueStart').value),
+                    end: convertTo24Hour(document.getElementById('tueEnd').value)
+                },
+                wednesday: {
+                    start: convertTo24Hour(document.getElementById('wedStart').value),
+                    end: convertTo24Hour(document.getElementById('wedEnd').value)
+                },
+                thursday: {
+                    start: convertTo24Hour(document.getElementById('thuStart').value),
+                    end: convertTo24Hour(document.getElementById('thuEnd').value)
+                },
+                friday: {
+                    start: convertTo24Hour(document.getElementById('friStart').value),
+                    end: convertTo24Hour(document.getElementById('friEnd').value)
+                },
+                saturday: {
+                    start: convertTo24Hour(document.getElementById('satStart').value),
+                    end: convertTo24Hour(document.getElementById('satEnd').value)
+                },
+                sunday: {
+                    start: convertTo24Hour(document.getElementById('sunStart').value),
+                    end: convertTo24Hour(document.getElementById('sunEnd').value)
+                }
+            };
+
+            updateUser(currentUser);
+            alert('Profile updated successfully!');
+        });
+
+        // Load saved profile data
+        function loadProfileData() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) return;
+
+            // Load profile picture
+            if (currentUser.profilePicture) {
+                document.getElementById('profilePicture').src = currentUser.profilePicture;
+            }
+
+            // Load basic info
+            document.getElementById('businessNameInput').value = currentUser.businessName || '';
+            document.getElementById('fullName').value = currentUser.fullName || '';
+            document.getElementById('emailInput').value = currentUser.email || '';
+            document.getElementById('phoneInput').value = currentUser.businessInfo?.phone || '';
+            document.getElementById('description').value = currentUser.businessInfo?.description || '';
+            document.getElementById('services').value = (currentUser.businessInfo?.services || []).join('\n');
+            document.getElementById('location').value = currentUser.businessInfo?.location || '';
+
+            // Update displays
+            document.getElementById('businessNameDisplay').textContent = currentUser.businessName || 'Business Name';
+            document.getElementById('username').textContent = currentUser.fullName || 'Full Name';
+            document.getElementById('emailDisplay').innerHTML = `<i class="fas fa-envelope"></i> ${currentUser.email || 'email@example.com'}`;
+            document.getElementById('phoneDisplay').innerHTML = `<i class="fas fa-phone"></i> ${currentUser.businessInfo?.phone || 'Phone Number'}`;
+
+            // Load business hours with proper formatting
+            const hours = currentUser.businessHours;
+            if (hours) {
+                Object.entries(hours).forEach(([day, times]) => {
+                    const dayPrefix = day.substring(0, 3).toLowerCase();
+                    if (times.start) {
+                        document.getElementById(dayPrefix + 'Start').value = 
+                            new Date('2000-01-01T' + times.start).toLocaleTimeString('en-US', {
+                                hour: 'numeric',
+                                minute: '2-digit',
+                                hour12: true
+                            });
+                    }
+                    if (times.end) {
+                        document.getElementById(dayPrefix + 'End').value = 
+                            new Date('2000-01-01T' + times.end).toLocaleTimeString('en-US', {
+                                hour: 'numeric',
+                                minute: '2-digit',
+                                hour12: true
+                            });
+                    }
+                });
+            }
+        }
+
+        // Load posts grid
+        function loadPostsGrid() {
+            const postsGrid = document.getElementById('postsGrid');
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            let allPosts = JSON.parse(localStorage.getItem('posts')) || [];
+            
+            // Filter posts to only show the current provider's posts
+            let posts = allPosts.filter(post => post.providerUsername === currentUser.username);
+
+            if (posts.length === 0) {
+                postsGrid.innerHTML = '<p class="no-posts">No posts yet</p>';
+                return;
+            }
+
+            postsGrid.innerHTML = posts.map((post) => `
+                <div class="grid-post" onclick="openPostModal('${post.timestamp}')">
+                    <img src="${post.imageUrl}" alt="Post">
+                    <div class="post-overlay">
+                        <div class="post-stats">
+                            <span>❤️ ${post.likes?.length || 0}</span>
+                            <span>💬 ${(post.comments || []).length}</span>
+                        </div>
+                        <button class="delete-post-button" onclick="event.stopPropagation(); deletePost('${post.timestamp}')">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Post Modal
+        function openPostModal(timestamp) {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            let posts = JSON.parse(localStorage.getItem('posts')) || [];
+            const post = posts.find(p => p.timestamp === timestamp);
+            if (!post) return;
+            
+            const modal = document.createElement('div');
+            modal.className = 'post-modal';
+            
+            const comments = post.comments || [];
+            const commentsList = comments.map(comment => `
+                <div class="comment">
+                    <div class="comment-header">
+                        <img src="${comment.userImage || 'default-profile.png'}" alt="User" class="comment-user-image">
+                        <div class="comment-info">
+                            <span class="comment-username">${comment.username}</span>
+                            <span class="comment-date">${comment.date}</span>
+                        </div>
+                    </div>
+                    <p class="comment-text">${comment.text}</p>
+                </div>
+            `).join('');
+
+            modal.innerHTML = `
+                <div class="modal-overlay" onclick="closePostModal()">
+                    <div class="modal-content" onclick="event.stopPropagation()">
+                        <div class="modal-post">
+                            <img src="${post.imageUrl}" alt="Post" class="modal-post-image">
+                            <div class="modal-post-details">
+                                <div class="modal-post-header">
+                                    <img src="${currentUser.profilePicture}" alt="Profile" class="post-user-image">
+                                    <span class="post-username">${currentUser.businessName}</span>
+                                </div>
+                                <div class="modal-post-caption">
+                                    <p>${post.caption}</p>
+                                </div>
+                                <div class="modal-comments">
+                                    ${commentsList}
+                                </div>
+                                <div class="modal-post-actions">
+                                    <button class="action-button like-button" onclick="toggleLike('${timestamp}')">
+                                        <span class="like-icon">♥</span>
+                                        <span class="like-count">${post.likes?.length || 0}</span>
+                                    </button>
+                                    <button class="action-button comment-button" onclick="focusCommentInput('modalCommentInput')">
+                                        💬 Comment
+                                    </button>
+                                </div>
+                                <div class="comment-input-container">
+                                    <img src="${currentUser.profilePicture}" alt="User" class="comment-user-image">
+                                    <input type="text" 
+                                           class="comment-input" 
+                                           id="modalCommentInput" 
+                                           placeholder="Add a comment..."
+                                           onkeypress="handleCommentSubmit(event, '${timestamp}')">
+                                </div>
+                            </div>
+                        </div>
+                        <button class="modal-close" onclick="closePostModal()">×</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePostModal() {
+            const modal = document.querySelector('.post-modal');
+            if (modal) {
+                modal.remove();
+                document.body.style.overflow = '';
+            }
+        }
+
+        function toggleLike(timestamp) {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            let posts = JSON.parse(localStorage.getItem('posts')) || [];
+            const postIndex = posts.findIndex(p => p.timestamp === timestamp);
+            
+            if (postIndex !== -1) {
+                const post = posts[postIndex];
+                if (!post.likes) post.likes = [];
+                
+                const userLikeIndex = post.likes.indexOf(currentUser.username);
+                if (userLikeIndex === -1) {
+                    post.likes.push(currentUser.username);
+                } else {
+                    post.likes.splice(userLikeIndex, 1);
+                }
+                
+                localStorage.setItem('posts', JSON.stringify(posts));
+                loadPostsGrid();
+                
+                // Update modal if open
+                const modal = document.querySelector('.post-modal');
+                if (modal) {
+                    const likeCount = modal.querySelector('.like-count');
+                    if (likeCount) {
+                        likeCount.textContent = posts[postIndex].likes.length;
+                    }
+                }
+            }
+        }
+
+        function handleCommentSubmit(event, timestamp) {
+            if (event.key === 'Enter' && event.target.value.trim() !== '') {
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                let posts = JSON.parse(localStorage.getItem('posts')) || [];
+                const postIndex = posts.findIndex(p => p.timestamp === timestamp);
+                
+                if (postIndex !== -1) {
+                    const post = posts[postIndex];
+                    if (!post.comments) post.comments = [];
+                    
+                    post.comments.push({
+                        username: currentUser.username,
+                        userImage: currentUser.profilePicture,
+                        text: event.target.value.trim(),
+                        date: new Date().toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                        })
+                    });
+
+                    localStorage.setItem('posts', JSON.stringify(posts));
+                    event.target.value = '';
+                    
+                    loadPostsGrid();
+                    closePostModal();
+                    openPostModal(timestamp);
+                }
+            }
+        }
+
+        function focusCommentInput(inputId) {
+            document.getElementById(inputId).focus();
+        }
+
+        function confirmDeleteAccount() {
+            document.getElementById('deleteAccountModal').style.display = 'flex';
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteAccountModal').style.display = 'none';
+        }
+
+        function deleteAccount() {
+            // Get current user and all users
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const posts = JSON.parse(localStorage.getItem('posts')) || [];
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            
+            // Remove user's posts
+            const updatedPosts = posts.filter(post => post.providerUsername !== currentUser.username);
+            localStorage.setItem('posts', JSON.stringify(updatedPosts));
+
+            // Remove user's comments from all posts
+            const remainingPosts = posts.map(post => {
+                post.comments = post.comments.filter(comment => comment.username !== currentUser.username);
+                post.likes = post.likes.filter(username => username !== currentUser.username);
+                return post;
+            });
+            localStorage.setItem('posts', JSON.stringify(remainingPosts));
+
+            // Remove user from users array
+            const updatedUsers = users.filter(user => user.username !== currentUser.username);
+            localStorage.setItem('users', JSON.stringify(updatedUsers));
+
+            // Clear current user
+            localStorage.removeItem('currentUser');
+
+            // Show confirmation and redirect
+            alert('Your account has been successfully deleted.');
+            window.location.href = 'login.html';
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        function deletePost(timestamp) {
+            console.log('Delete post called with timestamp:', timestamp);
+            
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            console.log('Current user:', currentUser.username);
+            
+            let posts = JSON.parse(localStorage.getItem('posts')) || [];
+            console.log('All posts before deletion:', posts);
+            
+            // Find the post index using the timestamp
+            const postIndex = posts.findIndex(p => 
+                p.timestamp === timestamp && 
+                p.providerUsername === currentUser.username
+            );
+            
+            console.log('Found post index:', postIndex);
+            
+            if (postIndex !== -1) {
+                // Remove the post
+                posts.splice(postIndex, 1);
+                localStorage.setItem('posts', JSON.stringify(posts));
+                console.log('Post deleted, remaining posts:', posts);
+                
+                // Refresh the grid
+                loadPostsGrid();
+                
+                // Close modal if open
+                closePostModal();
+            } else {
+                console.log('Post not found or not owned by current user');
+            }
+        }
+
+        // Add these new functions for business hours handling
+        function formatTime(input) {
+            let value = input.value.toUpperCase();
+            
+            // Remove any non-alphanumeric characters except :
+            value = value.replace(/[^0-9:APM]/g, '');
+            
+            // Format the time
+            if (value.length > 0) {
+                // Extract hours and minutes
+                let timeParts = value.split(':');
+                let hours = parseInt(timeParts[0]) || 0;
+                let minutes = parseInt(timeParts[1]) || 0;
+                let period = value.includes('PM') ? 'PM' : 'AM';
+                
+                // Validate hours and minutes
+                hours = Math.min(Math.max(hours, 1), 12);
+                minutes = Math.min(Math.max(minutes, 0), 59);
+                
+                // Format the time string
+                value = `${hours}:${minutes.toString().padStart(2, '0')} ${period}`;
+            }
+            
+            input.value = value;
+            saveBusinessHours(); // Save hours whenever they are formatted
+        }
+
+        function saveBusinessHours() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) return;
+
+            function convertTo24Hour(time12h) {
+                if (!time12h) return '';
+                const [time, modifier] = time12h.split(' ');
+                let [hours, minutes] = time.split(':');
+                hours = parseInt(hours);
+                if (hours === 12) hours = 0;
+                if (modifier === 'PM') hours += 12;
+                return `${hours.toString().padStart(2, '0')}:${minutes}`;
+            }
+
+            currentUser.businessHours = {
+                monday: {
+                    start: convertTo24Hour(document.getElementById('monStart').value),
+                    end: convertTo24Hour(document.getElementById('monEnd').value)
+                },
+                tuesday: {
+                    start: convertTo24Hour(document.getElementById('tueStart').value),
+                    end: convertTo24Hour(document.getElementById('tueEnd').value)
+                },
+                wednesday: {
+                    start: convertTo24Hour(document.getElementById('wedStart').value),
+                    end: convertTo24Hour(document.getElementById('wedEnd').value)
+                },
+                thursday: {
+                    start: convertTo24Hour(document.getElementById('thuStart').value),
+                    end: convertTo24Hour(document.getElementById('thuEnd').value)
+                },
+                friday: {
+                    start: convertTo24Hour(document.getElementById('friStart').value),
+                    end: convertTo24Hour(document.getElementById('friEnd').value)
+                },
+                saturday: {
+                    start: convertTo24Hour(document.getElementById('satStart').value),
+                    end: convertTo24Hour(document.getElementById('satEnd').value)
+                },
+                sunday: {
+                    start: convertTo24Hour(document.getElementById('sunStart').value),
+                    end: convertTo24Hour(document.getElementById('sunEnd').value)
+                }
+            };
+
+            updateUser(currentUser);
+        }
+
+        function copyHoursToAll(startId, endId) {
+            const startTime = document.getElementById(startId).value;
+            const endTime = document.getElementById(endId).value;
+            
+            const days = ['tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+            days.forEach(day => {
+                document.getElementById(day + 'Start').value = startTime;
+                document.getElementById(day + 'End').value = endTime;
+            });
+            saveBusinessHours(); // Save hours after copying
+        }
+
+        // Add event listeners to all time inputs
+        document.addEventListener('DOMContentLoaded', function() {
+            const timeInputs = document.querySelectorAll('.time-input');
+            timeInputs.forEach(input => {
+                input.addEventListener('blur', function() {
+                    formatTime(this);
+                });
+                
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        formatTime(this);
+                        this.blur();
+                    }
+                });
+
+                // Add change event listener to save on any change
+                input.addEventListener('change', function() {
+                    formatTime(this);
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

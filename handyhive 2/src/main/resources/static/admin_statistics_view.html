@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Statistics - HandyHive</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/profile.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <style>
+        .stats-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .stats-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #eee;
+        }
+        .stats-header h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+        .chart-container {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+        }
+        .chart-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .chart-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .chart-header h3::before {
+            content: '';
+            display: block;
+            width: 4px;
+            height: 24px;
+            background: #ffb300;
+            border-radius: 2px;
+        }
+        .chart-filters {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .filter-group label {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+        .filter-group select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #333;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .filter-group select:hover {
+            border-color: #ffb300;
+        }
+        .filter-group select:focus {
+            outline: none;
+            border-color: #ffb300;
+            box-shadow: 0 0 0 2px rgba(255, 179, 0, 0.1);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-number {
+            font-size: 32px;
+            font-weight: 600;
+            color: #ffb300;
+            margin: 10px 0;
+        }
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .chart-wrapper {
+            min-height: 400px;
+            position: relative;
+        }
+        #activityChart, #demandChart {
+            width: 100%;
+            height: 400px;
+        }
+        /* Navigation Bar Styles */
+        .navbar {
+            background: white;
+            padding: 16px 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .navbar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            gap: 24px;
+        }
+        .navbar a {
+            color: #666;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        .navbar a:hover {
+            color: #ffb300;
+            background: #fff8e1;
+        }
+        .navbar a.active {
+            color: #ffb300;
+            background: #fff8e1;
+        }
+        .navbar .logo {
+            height: 40px;
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <ul>
+            <li><a href="/admin_view.html">Admin Dashboard</a></li>
+            <li><a href="/admin_statistics_view.html" class="active">Statistics</a></li>
+            <li><a href="/admin_view_provider.html">Manage Providers</a></li>
+            <li><a href="javascript:void(0)" onclick="logout()">Logout</a></li>
+        </ul>
+        <img src="/images/logo.png" alt="HandyHive Logo" class="logo">
+    </nav>
+
+    <div class="stats-container">
+        <div class="stats-header">
+            <h2>Platform Statistics</h2>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalUsers">0</div>
+                <div class="stat-label">Total Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="activeProviders">0</div>
+                <div class="stat-label">Active Providers</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalPosts">0</div>
+                <div class="stat-label">Total Posts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalInteractions">0</div>
+                <div class="stat-label">Total Interactions</div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-header">
+                <h3>Customer Activity vs Service Demand</h3>
+            </div>
+            <div class="chart-filters">
+                <div class="filter-group">
+                    <label for="timeRange">Time Range:</label>
+                    <select id="timeRange" onchange="updateCharts()">
+                        <option value="7">Last 7 Days</option>
+                        <option value="30">Last 30 Days</option>
+                        <option value="90">Last 90 Days</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="serviceType">Service Type:</label>
+                    <select id="serviceType" onchange="updateCharts()">
+                        <option value="all">All Services</option>
+                        <option value="cleaning">Cleaning</option>
+                        <option value="plumbing">Plumbing</option>
+                        <option value="electrical">Electrical</option>
+                        <option value="gardening">Gardening</option>
+                    </select>
+                </div>
+            </div>
+            <div class="chart-wrapper">
+                <div id="activityChart"></div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-header">
+                <h3>Service Demand by Category</h3>
+            </div>
+            <div class="chart-wrapper">
+                <div id="demandChart"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check if user is admin
+        window.addEventListener('load', function() {
+            try {
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                if (!currentUser || currentUser.type !== 'admin') {
+                    window.location.href = '/admin_login.html';
+                    return;
+                }
+                loadStatistics();
+                initializeCharts();
+            } catch (error) {
+                console.error('Error during initialization:', error);
+                alert('There was an error loading the page. Please try refreshing.');
+            }
+        });
+
+        function loadStatistics() {
+            try {
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                const providers = users.filter(user => user.type === 'provider');
+                const posts = JSON.parse(localStorage.getItem('posts')) || [];
+                
+                document.getElementById('totalUsers').textContent = users.length;
+                document.getElementById('activeProviders').textContent = providers.length;
+                document.getElementById('totalPosts').textContent = posts.length;
+                document.getElementById('totalInteractions').textContent = calculateTotalInteractions();
+            } catch (error) {
+                console.error('Error loading statistics:', error);
+            }
+        }
+
+        function calculateTotalInteractions() {
+            try {
+                const posts = JSON.parse(localStorage.getItem('posts')) || [];
+                return posts.reduce((total, post) => {
+                    return total + (post.views || 0) + (post.likes || 0) + ((post.comments && post.comments.length) || 0);
+                }, 0);
+            } catch (error) {
+                console.error('Error calculating interactions:', error);
+                return 0;
+            }
+        }
+
+        // Initialize Google Charts
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(initializeCharts);
+
+        function initializeCharts() {
+            try {
+                drawActivityChart();
+                drawDemandChart();
+            } catch (error) {
+                console.error('Error initializing charts:', error);
+            }
+        }
+
+        function drawActivityChart() {
+            try {
+                const data = google.visualization.arrayToDataTable([
+                    ['Day', 'Customer Activity', 'Service Demand'],
+                    ['Mon', 20, 28],
+                    ['Tue', 25, 30],
+                    ['Wed', 30, 35],
+                    ['Thu', 28, 32],
+                    ['Fri', 35, 40],
+                    ['Sat', 40, 45],
+                    ['Sun', 30, 35]
+                ]);
+
+                const options = {
+                    curveType: 'function',
+                    legend: { position: 'bottom' },
+                    colors: ['#ffb300', '#4CAF50'],
+                    chartArea: { width: '90%', height: '80%' },
+                    backgroundColor: 'transparent',
+                    vAxis: {
+                        minValue: 0,
+                        gridlines: { color: '#f5f5f5' }
+                    },
+                    hAxis: {
+                        gridlines: { color: 'transparent' }
+                    }
+                };
+
+                const chart = new google.visualization.LineChart(document.getElementById('activityChart'));
+                chart.draw(data, options);
+            } catch (error) {
+                console.error('Error drawing activity chart:', error);
+                document.getElementById('activityChart').innerHTML = 'Error loading chart';
+            }
+        }
+
+        function drawDemandChart() {
+            try {
+                const data = google.visualization.arrayToDataTable([
+                    ['Service', 'Demand'],
+                    ['Cleaning', 30],
+                    ['Plumbing', 20],
+                    ['Electrical', 25],
+                    ['Gardening', 15],
+                    ['Other', 10]
+                ]);
+
+                const options = {
+                    pieHole: 0.4,
+                    colors: ['#ffb300', '#4CAF50', '#2196F3', '#FF5722', '#9C27B0'],
+                    chartArea: { width: '90%', height: '90%' },
+                    backgroundColor: 'transparent',
+                    legend: { position: 'right' }
+                };
+
+                const chart = new google.visualization.PieChart(document.getElementById('demandChart'));
+                chart.draw(data, options);
+            } catch (error) {
+                console.error('Error drawing demand chart:', error);
+                document.getElementById('demandChart').innerHTML = 'Error loading chart';
+            }
+        }
+
+        function updateCharts() {
+            try {
+                drawActivityChart();
+                drawDemandChart();
+            } catch (error) {
+                console.error('Error updating charts:', error);
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = '/login.html';
+        }
+    </script>
+</body>
+</html> 

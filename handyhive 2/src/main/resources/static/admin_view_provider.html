@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Providers - HandyHive</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/profile.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        .providers-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .providers-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #eee;
+        }
+        .providers-header h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+        .search-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .search-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #ffb300;
+            box-shadow: 0 0 0 2px rgba(255, 179, 0, 0.1);
+        }
+        .filter-select {
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #333;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .filter-select:hover {
+            border-color: #ffb300;
+        }
+        .filter-select:focus {
+            outline: none;
+            border-color: #ffb300;
+            box-shadow: 0 0 0 2px rgba(255, 179, 0, 0.1);
+        }
+        .providers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 24px;
+        }
+        .provider-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        .provider-card:hover {
+            transform: translateY(-5px);
+        }
+        .provider-header {
+            padding: 20px;
+            background: #fff8e1;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .provider-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .provider-info {
+            flex: 1;
+        }
+        .provider-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 4px 0;
+        }
+        .provider-type {
+            font-size: 14px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .provider-type::before {
+            content: '•';
+            color: #ffb300;
+            font-size: 20px;
+        }
+        .provider-body {
+            padding: 20px;
+        }
+        .provider-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #ffb300;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+        .provider-actions {
+            display: flex;
+            gap: 12px;
+        }
+        .action-button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .view-button {
+            background: #ffb300;
+            color: white;
+        }
+        .view-button:hover {
+            background: #ffa000;
+        }
+        .suspend-button {
+            background: #f44336;
+            color: white;
+        }
+        .suspend-button:hover {
+            background: #d32f2f;
+        }
+        .suspended {
+            background: #f5f5f5;
+            opacity: 0.8;
+        }
+        .suspended .provider-header {
+            background: #eeeeee;
+        }
+        .suspended .provider-name::after {
+            content: '(Suspended)';
+            font-size: 12px;
+            color: #f44336;
+            margin-left: 8px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            color: #666;
+            font-style: italic;
+            grid-column: 1 / -1;
+        }
+        /* Navigation Bar Styles */
+        .navbar {
+            background: white;
+            padding: 16px 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .navbar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            gap: 24px;
+        }
+        .navbar a {
+            color: #666;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        .navbar a:hover {
+            color: #ffb300;
+            background: #fff8e1;
+        }
+        .navbar a.active {
+            color: #ffb300;
+            background: #fff8e1;
+        }
+        .navbar .logo {
+            height: 40px;
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <ul>
+            <li><a href="admin_view.html">Admin Dashboard</a></li>
+            <li><a href="admin_statistics_view.html">Statistics</a></li>
+            <li><a href="admin_view_provider.html" class="active">Manage Providers</a></li>
+            <li><a href="#" onclick="logout()">Logout</a></li>
+        </ul>
+        <img src="logo.png" alt="HandyHive Logo" class="logo">
+    </nav>
+
+    <div class="providers-container">
+        <div class="providers-header">
+            <h2>Manage Service Providers</h2>
+        </div>
+
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Search providers..." onkeyup="filterProviders()">
+            <select class="filter-select" onchange="filterProviders()">
+                <option value="all">All Providers</option>
+                <option value="active">Active</option>
+                <option value="suspended">Suspended</option>
+            </select>
+        </div>
+
+        <div class="providers-grid" id="providersGrid">
+            <!-- Providers will be loaded here -->
+        </div>
+    </div>
+
+    <script>
+        // Check if user is admin
+        window.addEventListener('load', function() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser || currentUser.type !== 'admin') {
+                window.location.href = 'admin_login.html';
+                return;
+            }
+            loadProviders();
+        });
+
+        function loadProviders() {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const providers = users.filter(user => user.type === 'provider');
+            const posts = JSON.parse(localStorage.getItem('posts')) || [];
+            
+            const providersGrid = document.getElementById('providersGrid');
+            
+            if (providers.length === 0) {
+                providersGrid.innerHTML = '<div class="empty-state">No service providers found</div>';
+                return;
+            }
+
+            providersGrid.innerHTML = providers.map(provider => {
+                const providerPosts = posts.filter(post => post.providerId === provider.id);
+                const totalViews = providerPosts.reduce((sum, post) => sum + (post.views || 0), 0);
+                const totalLikes = providerPosts.reduce((sum, post) => sum + (post.likes || 0), 0);
+                
+                return `
+                    <div class="provider-card ${provider.suspended ? 'suspended' : ''}" data-provider-id="${provider.id}">
+                        <div class="provider-header">
+                            <img src="${provider.profilePicture || 'images/default-avatar.png'}" alt="${provider.businessName}" class="provider-avatar">
+                            <div class="provider-info">
+                                <h3 class="provider-name">${provider.businessName || provider.fullName}</h3>
+                                <div class="provider-type">${provider.serviceType || 'General Services'}</div>
+                            </div>
+                        </div>
+                        <div class="provider-body">
+                            <div class="provider-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value">${providerPosts.length}</div>
+                                    <div class="stat-label">Posts</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">${totalViews}</div>
+                                    <div class="stat-label">Total Views</div>
+                                </div>
+                            </div>
+                            <div class="provider-actions">
+                                <button class="action-button view-button" onclick="viewProvider('${provider.id}')">View Profile</button>
+                                <button class="action-button suspend-button" onclick="toggleSuspension('${provider.id}')">
+                                    ${provider.suspended ? 'Reactivate' : 'Suspend'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterProviders() {
+            const searchInput = document.querySelector('.search-input').value.toLowerCase();
+            const filterValue = document.querySelector('.filter-select').value;
+            const providerCards = document.querySelectorAll('.provider-card');
+
+            providerCards.forEach(card => {
+                const providerName = card.querySelector('.provider-name').textContent.toLowerCase();
+                const isSuspended = card.classList.contains('suspended');
+                
+                const matchesSearch = providerName.includes(searchInput);
+                const matchesFilter = filterValue === 'all' || 
+                    (filterValue === 'active' && !isSuspended) || 
+                    (filterValue === 'suspended' && isSuspended);
+
+                card.style.display = matchesSearch && matchesFilter ? 'block' : 'none';
+            });
+        }
+
+        function viewProvider(providerId) {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const provider = users.find(user => user.id === providerId);
+            if (provider) {
+                localStorage.setItem('selectedProvider', JSON.stringify(provider));
+                window.location.href = `provider_profile.html?view=${provider.username}`;
+            }
+        }
+
+        function toggleSuspension(providerId) {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const providerIndex = users.findIndex(user => user.id === providerId);
+            
+            if (providerIndex !== -1) {
+                users[providerIndex].suspended = !users[providerIndex].suspended;
+                localStorage.setItem('users', JSON.stringify(users));
+                loadProviders();
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'static/login.html';
+        }
+    </script>
+</body>
+</html> 

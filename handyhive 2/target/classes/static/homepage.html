@@ -3,50 +3,420 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Posts</title>
+    <title>HandyHive | Home</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
+    <!-- Navigation Bar -->
     <nav class="navbar">
-        <ul>
-            <li><a href="homepage.html">Home</a></li>
-            <li><a href="provider_home.html">Upload a Post</a></li>
-            <li><a href="providerPosts.html">My Posts</a></li>
-        </ul>
-        <img src="logo.png" alt="HandyHive Logo" class="logo">
+        <div class="nav-left">
+            <a href="homepage.html" class="logo-link">
+                <img src="logo.png" alt="HandyHive Logo" class="logo">
+            </a>
+        </div>
+        <div class="nav-right">
+            <a href="homepage.html" class="active">Home</a>
+            <a href="find_services.html" id="findServicesLink" style="display: none;">Find Services</a>
+            <a href="saved_services.html" id="savedServicesLink" style="display: none;">Saved Services</a>
+            <a href="provider_home.html" id="uploadLink" style="display: none;">Create Post</a>
+            <a href="customer_profile.html" id="profileLink">Profile</a>
+            <a href="provider_statistics.html" id="statsLink" style="display: none;">Statistics</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </div>
     </nav>
 
-    <div class="container">
-        <h1>New Promotions!</h1>
-        <div id="postContainer"></div>
+    <!-- Delete Account Modal -->
+    <div id="deleteAccountModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h2>Delete Account</h2>
+            <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+            <div class="modal-buttons">
+                <button onclick="deleteAccount()" class="delete-button">Yes, Delete Account</button>
+                <button onclick="closeDeleteModal()" class="cancel-button">Cancel</button>
+            </div>
+        </div>
     </div>
 
-    <script>
-        function loadPosts() {
-            const postContainer = document.getElementById("postContainer");
-            let posts = JSON.parse(localStorage.getItem("posts")) || [];
+    <div class="container">
+        <div id="posts-container" class="posts-container">
+            <!-- Posts will be loaded here -->
+        </div>
+    </div>
 
-            if (posts.length === 0) {
-                postContainer.innerHTML = "<p class='no-posts'>No posts available.</p>";
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .posts-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .post {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .post-profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 12px;
+        }
+
+        .post-header-info h3 {
+            margin: 0;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .post-timestamp {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .post-content {
+            width: 100%;
+        }
+
+        .post-image {
+            width: 100%;
+            max-height: 500px;
+            object-fit: cover;
+        }
+
+        .post-caption {
+            padding: 12px;
+            margin: 0;
+            color: #333;
+        }
+
+        .post-actions {
+            display: flex;
+            padding: 12px;
+            border-top: 1px solid #eee;
+            gap: 12px;
+        }
+
+        .action-button {
+            background: none;
+            border: none;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .action-button:hover {
+            background-color: #f5f5f5;
+        }
+
+        .like-button.liked {
+            color: #ff4b4b;
+        }
+
+        .comments-section {
+            padding: 12px;
+            border-top: 1px solid #eee;
+        }
+
+        .comment {
+            display: flex;
+            align-items: start;
+            margin-bottom: 8px;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .comment:hover {
+            background-color: #f5f5f5;
+        }
+
+        .comment-profile-pic {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 8px;
+        }
+
+        .comment-content {
+            flex: 1;
+        }
+
+        .comment-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .no-posts {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-button.delete-button {
+            margin-left: auto;
+            color: #ff4b4b;
+        }
+
+        .action-button.delete-button:hover {
+            background-color: #fff1f1;
+        }
+    </style>
+
+    <script>
+        let currentUser = null;
+
+        window.addEventListener('load', () => {
+            const userJson = localStorage.getItem('currentUser');
+            if (!userJson) {
+                window.location.href = 'login.html';
                 return;
             }
 
-            postContainer.innerHTML = "";
+            currentUser = JSON.parse(userJson);
+            
+            if (currentUser.type === 'provider') {
+                document.getElementById('uploadLink').style.display = 'block';
+                document.getElementById('profileLink').href = 'provider_profile.html';
+                document.getElementById('statsLink').style.display = 'block';
+            } else if (currentUser.type === 'customer') {
+                document.getElementById('findServicesLink').style.display = 'block';
+                document.getElementById('savedServicesLink').style.display = 'block';
+                document.getElementById('profileLink').href = 'customer_profile.html';
+            }
+
+            loadPosts();
+        });
+
+        function loadPosts() {
+            const postsContainer = document.getElementById('posts-container');
+            const posts = JSON.parse(localStorage.getItem('posts')) || [];
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+
+            postsContainer.innerHTML = '';
+
+            if (!posts || posts.length === 0) {
+                postsContainer.innerHTML = `
+                    <div class="no-posts">
+                        <h2>No Posts Yet</h2>
+                        <p>Be the first to share your work!</p>
+                    </div>
+                `;
+                return;
+            }
+
             posts.forEach((post, index) => {
-                const postElement = document.createElement("div");
-                postElement.classList.add("post");
-
+                const provider = users.find(user => user.username === post.providerUsername);
+                
+                const postElement = document.createElement('div');
+                postElement.className = 'post';
+                
                 postElement.innerHTML = `
-                    <img src="${post.imageUrl}" alt="Uploaded Image" class="post-image">
-                    <p class="post-caption">${post.caption}</p>`;
+                    <div class="post-header">
+                        <img src="${provider?.profilePicture || 'default-profile.png'}" alt="Profile" class="post-profile-pic">
+                        <div class="post-header-info">
+                            <h3>${provider ? (provider.businessName || provider.username) : 'Unknown Provider'}</h3>
+                            <span class="post-timestamp">${formatTimestamp(post.timestamp)}</span>
+                        </div>
+                    </div>
+                    <div class="post-content">
+                        <img src="${post.imageUrl}" alt="Post image" class="post-image">
+                        <p class="post-caption">${post.caption}</p>
+                    </div>
+                    <div class="post-actions">
+                        <button class="action-button like-button ${post.likes?.includes(currentUser.username) ? 'liked' : ''}" 
+                                onclick="toggleLike(${index})">
+                            ❤️ ${post.likes?.length || 0}
+                        </button>
+                        <button class="action-button comment-button" onclick="focusComment(${index})">
+                            💬 Comment
+                        </button>
+                    </div>
+                    <div class="comments-section">
+                        <div class="comments-container">
+                            ${renderComments(post.comments, users)}
+                        </div>
+                        <div class="comment-input-container">
+                            <input type="text" placeholder="Add a comment..." 
+                                   id="comment-input-${index}"
+                                   onkeypress="handleCommentSubmit(event, ${index})" 
+                                   class="comment-input">
+                        </div>
+                    </div>
+                `;
 
-                postContainer.appendChild(postElement);
+                postsContainer.appendChild(postElement);
             });
         }
 
-        window.onload = loadPosts;
-    </script>
+        function renderComments(comments = [], users) {
+            if (!comments.length) return '';
+            
+            return comments.map(comment => {
+                const commentUser = users.find(u => u.username === comment.username);
+                return `
+                    <div class="comment">
+                        <img src="${commentUser?.profilePicture || 'default-profile.png'}" alt="Profile" class="comment-profile-pic">
+                        <div class="comment-content">
+                            <strong>${commentUser?.username || 'Unknown User'}</strong>
+                            <span>${comment.text}</span>
+                            <span class="comment-timestamp">${formatTimestamp(comment.timestamp)}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
 
+        function formatTimestamp(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            
+            const seconds = Math.floor(diff / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+
+            if (days > 0) return `${days}d ago`;
+            if (hours > 0) return `${hours}h ago`;
+            if (minutes > 0) return `${minutes}m ago`;
+            return 'Just now';
+        }
+
+        function toggleLike(postIndex) {
+            const posts = JSON.parse(localStorage.getItem('posts')) || [];
+            const post = posts[postIndex];
+            
+            if (!post.likes) post.likes = [];
+            
+            const userLikeIndex = post.likes.indexOf(currentUser.username);
+            if (userLikeIndex === -1) {
+                post.likes.push(currentUser.username);
+            } else {
+                post.likes.splice(userLikeIndex, 1);
+            }
+            
+            localStorage.setItem('posts', JSON.stringify(posts));
+            loadPosts();
+        }
+
+        function handleCommentSubmit(event, postIndex) {
+            if (event.key === 'Enter' && event.target.value.trim()) {
+                const posts = JSON.parse(localStorage.getItem('posts')) || [];
+                const post = posts[postIndex];
+                
+                if (!post.comments) post.comments = [];
+                
+                post.comments.push({
+                    username: currentUser.username,
+                    text: event.target.value.trim(),
+                    timestamp: new Date().toISOString()
+                });
+                
+                localStorage.setItem('posts', JSON.stringify(posts));
+                event.target.value = '';
+                loadPosts();
+            }
+        }
+
+        function focusComment(index) {
+            document.getElementById(`comment-input-${index}`).focus();
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        }
+
+        function confirmDeleteAccount() {
+            document.getElementById('deleteAccountModal').style.display = 'flex';
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteAccountModal').style.display = 'none';
+        }
+
+        function deleteAccount() {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const posts = JSON.parse(localStorage.getItem('posts')) || [];
+            
+            if (currentUser.type === 'provider') {
+                const updatedPosts = posts.filter(post => post.providerUsername !== currentUser.username);
+                localStorage.setItem('posts', JSON.stringify(updatedPosts));
+            }
+
+            const updatedPosts = posts.map(post => ({
+                ...post,
+                comments: post.comments.filter(comment => comment.username !== currentUser.username),
+                likes: post.likes.filter(username => username !== currentUser.username)
+            }));
+            
+            localStorage.setItem('posts', JSON.stringify(updatedPosts));
+            localStorage.setItem('users', JSON.stringify(users.filter(user => user.username !== currentUser.username)));
+            localStorage.removeItem('currentUser');
+            
+            alert('Your account has been successfully deleted.');
+            window.location.href = 'login.html';
+        }
+
+        function deletePost(postIndex) {
+            if (confirm('Are you sure you want to delete this post? This action cannot be undone.')) {
+                const posts = JSON.parse(localStorage.getItem('posts')) || [];
+                posts.splice(postIndex, 1);
+                localStorage.setItem('posts', JSON.stringify(posts));
+                loadPosts();
+            }
+        }
+
+        function clearPosts() {
+            if (confirm('Are you sure you want to clear all posts and related data? This cannot be undone.')) {
+                // Clear all posts and related data
+                localStorage.removeItem('posts');
+                localStorage.removeItem('savedPosts');
+                localStorage.removeItem('postLikes');
+                localStorage.removeItem('postComments');
+                
+                // Keep only the current user data
+                const currentUserData = localStorage.getItem('currentUser');
+                const currentUserInfo = localStorage.getItem('users');
+                
+                // Clear everything else
+                localStorage.clear();
+                
+                // Restore current user data
+                if (currentUserData) localStorage.setItem('currentUser', currentUserData);
+                if (currentUserInfo) localStorage.setItem('users', currentUserInfo);
+                
+                // Reload the posts (which should now show "No Posts Yet")
+                loadPosts();
+            }
+        }
+    </script>
 </body>
 </html>
 
