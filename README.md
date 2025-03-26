@@ -1,7 +1,7 @@
 # Title:
 Handy Hive
 # Team Members:
-Austin Rehner, Fady Eskandr, Isaac Hollaway
+Austin Rehner, Fady Eskandr
 # Description:
 - Our software will help connect homeowners with professional industry providers like electricians, plumbers, HVAC technicians, etc., and other repair needs. Our platform will aim to allow customers to browse, book, and review service providers while allowing providers to have a way to manage their services and client reviews.
 # Possible questions to answer: 
