@@ -34,16 +34,4 @@ Austin Rehner, Fady Eskandr, Isaac Hollaway
   4. Reply to reviews: <br />
 - Providers will be able to respond to customer reviews to address concerns and show appreciation for their feedback.
 
-# SysAdmin: Isaac <br />
-1. Manage user access:  <br />
-- The admin should be able to approve or deny access to customers and providers <br />
-- Admin side will handle provider legitimacy to ensure legitimate providers joining <br />
-2. Moderate services: <br />
-- Admin will review and approve service listings to maintain quality control. <br />
-- Remove fraudulent or low-quality service offerings. <br />
-3. Moderate reviews: <br />
-- Admin should remove any spam or inappropriate content that doesn't follow community guidelines <br />
-4. View usage statistics:<br />
-- Monitor platform activity, including service demand, provider engagement, and customer satisfaction. <br />
-- Generate a generic report for business growth strategies.
 
