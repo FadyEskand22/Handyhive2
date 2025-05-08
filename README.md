@@ -70,11 +70,11 @@ cd handyhive
 3. Create a new database called:
 
 ```
-handyhive
+handyhive_DB
 ```
 
 4. Import the SQL schema:
-   - Click on the `handyhive` database
+   - Click on the `handyhive_DB` database
    - Go to the **Import** tab
    - Choose the file `handyhive_schema.sql` from the project directory
    - Click **Go** to execute the import
@@ -122,7 +122,7 @@ src/main/java/com/handyHive23/handyHive23/HandyHive23Application.java
 
 Visit:  
 ```
-http://localhost:8080
+http://localhost:8081
 ```
 
 From there, you can:
