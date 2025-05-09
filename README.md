@@ -74,7 +74,7 @@ handyhive_DB
 ```
 
 4. Import the SQL schema:
-   - Click on the `handyhive_DB` database
+   - Click on the `handyhive_db` database
    - Go to the **Import** tab
    - Choose the file `handyhive_schema.sql` from the project directory
    - Click **Go** to execute the import
@@ -91,7 +91,7 @@ Ensure it includes:
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/handyhive
 spring.datasource.username=root
-spring.datasource.password=       # Add your password if set
+spring.datasource.password=mysql      
 spring.jpa.hibernate.ddl-auto=update
 spring.servlet.multipart.max-file-size=5MB
 spring.servlet.multipart.max-request-size=5MB
@@ -131,7 +131,7 @@ From there, you can:
 - Submit and read reviews
 - Book appointments
 - View business insights
-- Generate a **PDF report** with charted statistics
+- Generate a **PDF report** With Statistics
 
 ---
 
@@ -142,8 +142,6 @@ Providers can export a full **business performance report** via the "Convert to 
 - Total posts, comments, saves, and reviews
 - A detailed list of all customer comments and reviews
 - A list of recent bookings
-- 📈 A **bar chart** of all key engagement stats (powered by JFreeChart)
-
 ---
 
 ### 💡 Requirements
